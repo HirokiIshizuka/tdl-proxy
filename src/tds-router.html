@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TDLパークルーター｜最短全制覇ナビ</title>
+<title>TDSパークルーター｜最短全制覇ナビ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
 <style>
 :root{
   --blue:#003087;--blue-lt:#1A6FC4;--gold:#FFC72C;--gold-dk:#C9960C;
-  --red:#E8002D;--red-dk:#B5001F;--paper:#fff;
-  --base:#EEF3FF;--ink:#1A1A1A;--ink-soft:#5A5A6A;
-  --teal:#0FB5A8;--teal-dk:#0A8C82;
+  --red:#E8002D;--teal:#0990A0;--teal-lt:#14B8CC;--teal-dk:#076878;
+  --volcano:#C04018;--paper:#fff;
+  --base:#E8F5FA;--ink:#1A1A1A;--ink-soft:#5A5A6A;
   --coral:#FF6B5E;--sunny:#FFC247;
-  --line:#D5DDF0;
-  --shadow:0 10px 30px -12px rgba(0,48,135,.22);
-  --shadow-sm:0 4px 14px -6px rgba(0,48,135,.12);
+  --line:#C8DDE8;
+  --shadow:0 10px 30px -12px rgba(0,80,120,.22);
+  --shadow-sm:0 4px 14px -6px rgba(0,80,120,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--base);color:var(--ink);font-family:"Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}
@@ -24,28 +24,41 @@ body{min-height:100vh;padding:0 0 60px}
 
 /* HEADER */
 header{
-  background:linear-gradient(150deg,#001A4E 0%,#003087 45%,#1A5FB4 100%);
+  background:linear-gradient(150deg,#001830 0%,#003850 45%,#0A6888 100%);
   padding:26px 20px 22px;text-align:center;
   position:relative;overflow:hidden;
-  box-shadow:0 4px 24px rgba(0,48,135,.5);
+  box-shadow:0 4px 24px rgba(0,56,80,.55);
 }
-.hdr-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.hdr-stars::before,.hdr-stars::after{
-  content:"✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★ ✦ ★";
-  position:absolute;color:rgba(255,199,44,.25);font-size:10px;letter-spacing:18px;white-space:nowrap;width:220%;
+.hdr-waves{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hdr-waves::before,.hdr-waves::after{
+  content:"〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦ 〜 ✦";
+  position:absolute;color:rgba(20,184,204,.3);font-size:11px;letter-spacing:14px;white-space:nowrap;width:220%;
 }
-.hdr-stars::before{top:8px;animation:slidestars 20s linear infinite}
-.hdr-stars::after{bottom:6px;animation:slidestars 26s linear infinite reverse;opacity:.55}
-@keyframes slidestars{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.hdr-waves::before{top:8px;animation:slidewaves 22s linear infinite}
+.hdr-waves::after{bottom:6px;animation:slidewaves 28s linear infinite reverse;opacity:.6}
+@keyframes slidewaves{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-.mickey-icon{display:block;margin:0 auto 10px;position:relative}
+.sea-icon{display:block;margin:0 auto 10px;position:relative}
 .logo{
   font-family:"Zen Maru Gothic",sans-serif;font-weight:900;
   font-size:clamp(24px,6vw,40px);letter-spacing:1px;color:#fff;
-  text-shadow:0 2px 12px rgba(0,0,0,.4);position:relative;
+  text-shadow:0 2px 12px rgba(0,0,0,.45);position:relative;
 }
-.logo em{color:var(--gold);font-style:normal}
+.logo em{color:#14B8CC;font-style:normal}
 .tag{margin-top:6px;color:rgba(255,255,255,.72);font-size:13px;font-weight:500;position:relative}
+
+/* NAV SWITCH */
+.park-nav{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;display:inline-flex;gap:2px;padding:3px;
+  margin-top:14px;position:relative;
+}
+.park-nav a{
+  color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;
+  padding:6px 14px;border-radius:999px;transition:background .15s,color .15s;
+}
+.park-nav a.active{background:#fff;color:#003850}
+.park-nav a:not(.active):hover{color:#fff;background:rgba(255,255,255,.15)}
 
 .wrap{max-width:960px;margin:0 auto;padding:0 16px}
 
@@ -56,19 +69,19 @@ header{
   padding:13px 10px;text-align:center;box-shadow:var(--shadow-sm);
   position:relative;overflow:hidden;
 }
-.stat::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-lt))}
-.stat.hl::after{background:linear-gradient(90deg,var(--red),#FF6B5E)}
+.stat::after{content:"";position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--teal-lt))}
+.stat.hl::after{background:linear-gradient(90deg,var(--volcano),#FF6B5E)}
 .stat .num{font-family:"Mochiy Pop One",sans-serif;font-size:clamp(17px,4.5vw,26px);line-height:1}
 .stat .num small{font-size:.55em;color:var(--ink-soft)}
 .stat .lbl{margin-top:6px;font-size:11px;color:var(--ink-soft);font-weight:700}
-.stat.hl .num{color:var(--red)}
+.stat.hl .num{color:var(--volcano)}
 
 /* MAP + HERO */
 .map-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;align-items:start}
 @media(max-width:680px){.map-hero{grid-template-columns:1fr}}
 
 .map-wrap{background:var(--paper);border:1.5px solid var(--line);border-radius:22px;padding:14px;box-shadow:var(--shadow-sm)}
-.map-wrap h4{font-family:"Zen Maru Gothic";font-weight:700;font-size:13px;color:var(--blue);text-align:center;margin-bottom:10px;letter-spacing:.3px}
+.map-wrap h4{font-family:"Zen Maru Gothic";font-weight:700;font-size:13px;color:var(--teal);text-align:center;margin-bottom:10px;letter-spacing:.3px}
 #park-map{width:100%;height:auto;display:block;border-radius:10px}
 .map-legend{display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:10px}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--ink-soft);font-weight:700}
@@ -76,25 +89,25 @@ header{
 
 /* HERO */
 .hero{
-  background:linear-gradient(140deg,#001A4E 0%,#003087 55%,#1A6FC4 100%);
+  background:linear-gradient(140deg,#001830 0%,#003850 55%,#0A6888 100%);
   border-radius:22px;padding:20px;box-shadow:var(--shadow);color:#fff;
   position:relative;overflow:hidden;min-height:280px;
 }
-.hero::before{content:"";position:absolute;right:-20px;top:-20px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,199,44,.45),transparent 70%)}
-.hero::after{content:"";position:absolute;left:-15px;bottom:-15px;width:80px;height:80px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%)}
+.hero::before{content:"";position:absolute;right:-20px;top:-20px;width:110px;height:110px;background:radial-gradient(circle,rgba(20,184,204,.45),transparent 70%)}
+.hero::after{content:"";position:absolute;left:-15px;bottom:-15px;width:80px;height:80px;background:radial-gradient(circle,rgba(255,255,255,.07),transparent 70%)}
 .hero .kicker{
   display:inline-flex;align-items:center;gap:7px;position:relative;
-  background:var(--gold);color:#1A1A1A;font-weight:800;font-size:11px;
+  background:#14B8CC;color:#001830;font-weight:800;font-size:11px;
   padding:5px 12px;border-radius:999px;letter-spacing:.6px;
 }
-.hero .pin{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(232,0,45,.6)}70%{box-shadow:0 0 0 8px rgba(232,0,45,0)}100%{box-shadow:0 0 0 0 rgba(232,0,45,0)}}
+.hero .pin{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1.4s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,199,44,.7)}70%{box-shadow:0 0 0 8px rgba(255,199,44,0)}100%{box-shadow:0 0 0 0 rgba(255,199,44,0)}}
 .hero h2{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:clamp(17px,4vw,24px);margin:12px 0 4px;line-height:1.25;color:#fff;position:relative}
 .hero .land-tag{color:rgba(255,255,255,.65);font-size:12px;font-weight:700;position:relative}
 .hero .metrics{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap;position:relative}
 .hero .metric .v{font-family:"Mochiy Pop One",sans-serif;font-size:22px;line-height:1;color:#fff}
-.hero .metric .v.wait{color:var(--gold)}
-.hero .metric .v.walk{color:#7DD6FF}
+.hero .metric .v.wait{color:#14B8CC}
+.hero .metric .v.walk{color:#FFD080}
 .hero .metric .k{font-size:10px;color:rgba(255,255,255,.6);font-weight:700;margin-top:5px}
 .hero .why{margin-top:12px;font-size:12px;color:rgba(255,255,255,.82);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:11px;padding:9px 12px;position:relative;line-height:1.6}
 .hero .act{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;position:relative}
@@ -102,8 +115,8 @@ header{
 /* BUTTONS */
 .btn{font-family:"Noto Sans JP";font-weight:700;border:none;border-radius:13px;padding:11px 17px;font-size:13px;cursor:pointer;transition:transform .12s,box-shadow .12s}
 .btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--gold);color:#1A1A1A;font-weight:900;box-shadow:0 5px 14px -5px rgba(201,150,12,.55)}
-.btn-primary:hover{background:#FFD050;box-shadow:0 8px 18px -5px rgba(201,150,12,.65)}
+.btn-primary{background:#14B8CC;color:#001830;font-weight:900;box-shadow:0 5px 14px -5px rgba(7,104,120,.55)}
+.btn-primary:hover{background:#20C8DC;box-shadow:0 8px 18px -5px rgba(7,104,120,.65)}
 .btn-ghost{background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.32)}
 .btn-ghost:hover{background:rgba(255,255,255,.28)}
 
@@ -119,24 +132,24 @@ header{
 .ctrl-btn.teal{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 5px 14px -5px var(--teal-dk)}
 .sliderbox{display:flex;align-items:center;gap:8px;background:var(--paper);border:1.5px solid var(--line);border-radius:13px;padding:8px 13px;box-shadow:var(--shadow-sm)}
 .sliderbox label{font-size:12px;font-weight:700;color:var(--ink-soft)}
-input[type=range]{accent-color:var(--blue);width:85px}
+input[type=range]{accent-color:var(--teal);width:85px}
 .updated{font-size:11px;color:var(--ink-soft);margin-left:auto;font-weight:600}
 
 /* SECTION */
 .sec{margin:26px 0 12px;display:flex;align-items:center;gap:10px}
-.sec h3{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:16px;color:var(--blue);white-space:nowrap}
-.sec .bar{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 5px,transparent 5px 10px)}
+.sec h3{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:16px;color:var(--teal);white-space:nowrap}
+.sec .bar{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--teal-lt) 0 5px,transparent 5px 10px)}
 
 /* ROUTE PLAN */
 .plan{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:8px;box-shadow:var(--shadow-sm)}
 .step{display:flex;align-items:center;gap:13px;padding:10px 12px;border-radius:13px}
 .step+.step{border-top:1px solid var(--line)}
-.step .ord{flex:none;width:31px;height:31px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-lt));color:#fff;font-family:"Mochiy Pop One";font-size:14px;display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,48,135,.3)}
+.step .ord{flex:none;width:31px;height:31px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--teal-lt));color:#fff;font-family:"Mochiy Pop One";font-size:14px;display:grid;place-items:center;box-shadow:0 3px 8px rgba(0,120,150,.3)}
 .step .nm{flex:1;min-width:0}
 .step .nm b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .step .nm span{font-size:11px;color:var(--ink-soft)}
 .step .tm{text-align:right;font-size:12px;color:var(--ink-soft);white-space:nowrap}
-.step .tm b{font-family:"Mochiy Pop One";font-size:15px;color:var(--blue);display:block}
+.step .tm b{font-family:"Mochiy Pop One";font-size:15px;color:var(--teal);display:block}
 
 /* ATTRACTION LIST */
 .lands-wrap{display:flex;flex-direction:column;gap:16px}
@@ -147,7 +160,7 @@ input[type=range]{accent-color:var(--blue);width:85px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px}
 .ride{background:var(--paper);border:1.5px solid var(--line);border-radius:15px;padding:12px;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .15s,opacity .2s;box-shadow:0 2px 6px rgba(0,0,0,.05)}
 .ride:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
-.ride.done{opacity:.45;background:#F0F4FF}
+.ride.done{opacity:.45;background:#EAF5F8}
 .ride.closed{opacity:.55;border-style:dashed}
 .ride .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .ride .rn{font-size:13px;font-weight:700;line-height:1.3}
@@ -157,41 +170,37 @@ input[type=range]{accent-color:var(--blue);width:85px}
 .ride .wait-box .u{font-size:9px;color:var(--ink-soft);margin-top:2px}
 .ride .meta{font-size:11px;color:var(--ink-soft);display:flex;gap:6px;flex-wrap:wrap}
 .ride .chip{background:var(--base);border:1px solid var(--line);border-radius:999px;padding:2px 7px}
-.ride .ridebtn{margin-top:2px;border:none;border-radius:10px;padding:9px;font-weight:700;font-size:12px;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--blue-lt));color:#fff;transition:opacity .15s}
+.ride .ridebtn{margin-top:2px;border:none;border-radius:10px;padding:9px;font-weight:700;font-size:12px;cursor:pointer;background:linear-gradient(135deg,var(--teal),var(--teal-lt));color:#fff;transition:opacity .15s}
 .ride .ridebtn:hover{opacity:.85}
-.ride.done .ridebtn{background:linear-gradient(135deg,var(--teal),var(--teal-dk))}
-.closetag{font-size:10px;color:var(--red);font-weight:700}
-
-.park-nav{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;display:inline-flex;gap:2px;padding:3px;margin-top:14px;position:relative}
-.park-nav a{color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;padding:6px 14px;border-radius:999px;transition:background .15s,color .15s}
-.park-nav a.active{background:#fff;color:#003087}
-.park-nav a:not(.active):hover{color:#fff;background:rgba(255,255,255,.15)}
+.ride.done .ridebtn{background:linear-gradient(135deg,#888,#AAA)}
+.closetag{font-size:10px;color:var(--volcano);font-weight:700}
 
 footer{margin-top:32px;text-align:center;font-size:11px;color:var(--ink-soft);line-height:1.8}
-footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
+footer a{color:var(--teal);font-weight:700;text-decoration:none}
 @media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.sliderbox{display:none}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="hdr-stars"></div>
-  <!-- Mickey Mouse ears & face -->
-  <svg class="mickey-icon" width="76" height="60" viewBox="0 0 152 120" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="38" cy="38" r="36" fill="#1A1A1A"/>
-    <circle cx="114" cy="38" r="36" fill="#1A1A1A"/>
-    <circle cx="76" cy="82" r="46" fill="#1A1A1A"/>
-    <ellipse cx="76" cy="76" rx="32" ry="28" fill="#F5D4A8"/>
-    <ellipse cx="63" cy="70" rx="5.5" ry="6.5" fill="#1A1A1A"/>
-    <ellipse cx="89" cy="70" rx="5.5" ry="6.5" fill="#1A1A1A"/>
-    <ellipse cx="76" cy="81" rx="6" ry="4.5" fill="#1A1A1A"/>
-    <path d="M65 88 Q76 98 87 88" stroke="#1A1A1A" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <div class="hdr-waves"></div>
+  <!-- Sea anchor / TDS icon -->
+  <svg class="sea-icon" width="64" height="64" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <!-- Volcano / Mt. Prometheus silhouette -->
+    <polygon points="64,14 28,95 100,95" fill="#8B2200" opacity="0.9"/>
+    <polygon points="64,14 44,60 84,60" fill="#C04018" opacity="0.85"/>
+    <!-- Lava glow -->
+    <ellipse cx="64" cy="18" rx="10" ry="8" fill="#FF8040" opacity="0.8"/>
+    <ellipse cx="64" cy="14" rx="6" ry="5" fill="#FFC040" opacity="0.9"/>
+    <!-- Sea waves at base -->
+    <path d="M10 105 Q30 98 50 105 Q70 112 90 105 Q110 98 125 105" stroke="#14B8CC" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <path d="M10 116 Q30 109 50 116 Q70 123 90 116 Q110 109 125 116" stroke="#14B8CC" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.65"/>
   </svg>
-  <div class="logo">TDL <em>パークルーター</em></div>
+  <div class="logo">TDS <em>パークルーター</em></div>
   <div class="tag">ライブ待ち時間で「次に乗るべき1台」を計算 · 全アトラクション最短制覇ナビ</div>
   <div class="park-nav">
-    <a href="tdl-router.html" class="active">🏰 ディズニーランド</a>
-    <a href="tds-router.html">🌋 ディズニーシー</a>
+    <a href="tdl-router.html">🏰 ディズニーランド</a>
+    <a href="tds-router.html" class="active">🌋 ディズニーシー</a>
   </div>
 </header>
 
@@ -200,7 +209,7 @@ footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
 
   <div class="map-hero">
     <div class="map-wrap">
-      <h4>🏰 東京ディズニーランド パークマップ</h4>
+      <h4>🌋 東京ディズニーシー パークマップ</h4>
       <svg id="park-map" viewBox="0 0 350 330" xmlns="http://www.w3.org/2000/svg"></svg>
       <div class="map-legend" id="map-legend"></div>
     </div>
@@ -213,7 +222,7 @@ footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
     <div class="sliderbox">
       <label>徒歩の重視度</label>
       <input type="range" id="walkW" min="0" max="200" value="100" step="10">
-      <span id="walkWv" style="font-size:12px;font-weight:700;color:var(--blue)">×1.0</span>
+      <span id="walkWv" style="font-size:12px;font-weight:700;color:var(--teal)">×1.0</span>
     </div>
     <div class="updated" id="updated"></div>
   </div>
@@ -232,53 +241,76 @@ footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
 
 <script>
 const LANDS = {
-  adventure:{ name:"アドベンチャーランド", color:"#2E9E58" },
-  western:  { name:"ウエスタンランド",     color:"#C07A30" },
-  critter:  { name:"クリッターカントリー", color:"#7A5F30" },
-  fantasy:  { name:"ファンタジーランド",   color:"#C040A0" },
-  toon:     { name:"トゥーンタウン",       color:"#D49020" },
-  tomorrow: { name:"トゥモローランド",     color:"#2878C0" },
+  med:     { name:"地中海港",                     color:"#1880C0" },
+  american:{ name:"アメリカンウォーターフロント", color:"#B84820" },
+  port:    { name:"ポートディスカバリー",          color:"#109898" },
+  lost:    { name:"ロストリバーデルタ",            color:"#508030" },
+  springs: { name:"ファンタジースプリングス",      color:"#8050C8" },
+  arabian: { name:"アラビアンコースト",            color:"#C89020" },
+  mermaid: { name:"マーメイドラグーン",            color:"#2090B8" },
+  mystery: { name:"ミステリアスアイランド",        color:"#A03818" },
 };
+
 const ENTRANCE = {x:50,y:93};
 
 const ATTR = [
-  {id:"pirates",   name:"カリブの海賊",                         land:"adventure", x:35,y:78, base:25, type:"ride", dur:15},
-  {id:"jungle",    name:"ジャングルクルーズ",                    land:"adventure", x:32,y:70, base:35, type:"ride", dur:10},
-  {id:"wrr",       name:"ウエスタンリバー鉄道",                 land:"adventure", x:40,y:68, base:15, type:"ride", dur:13},
-  {id:"tiki",      name:"魅惑のチキルーム",                     land:"adventure", x:38,y:80, base:10, type:"show", dur:15},
-  {id:"btm",       name:"ビッグサンダー・マウンテン",           land:"western",   x:22,y:58, base:55, type:"ride", dur:4},
-  {id:"marktwain", name:"蒸気船マークトウェイン号",              land:"western",   x:30,y:60, base:15, type:"ride", dur:15},
-  {id:"cbear",     name:"カントリーベア・シアター",              land:"western",   x:28,y:66, base:15, type:"show", dur:15},
-  {id:"gallery",   name:"シューティングギャラリー",             land:"western",   x:33,y:64, base:20, type:"ride", dur:3},
-  {id:"splash",    name:"スプラッシュ・マウンテン",             land:"critter",   x:18,y:50, base:60, type:"ride", dur:11},
-  {id:"canoe",     name:"ビーバーブラザーズのカヌー探険",       land:"critter",   x:22,y:52, base:25, type:"ride", dur:10},
-  {id:"pooh",      name:"プーさんのハニーハント",               land:"fantasy",   x:45,y:40, base:65, type:"ride", dur:5},
-  {id:"mansion",   name:"ホーンテッドマンション",               land:"fantasy",   x:38,y:45, base:40, type:"ride", dur:9},
-  {id:"isw",       name:"イッツ・ア・スモールワールド",          land:"fantasy",   x:40,y:35, base:25, type:"ride", dur:10},
-  {id:"peterpan",  name:"ピーターパン空の旅",                   land:"fantasy",   x:50,y:42, base:45, type:"ride", dur:3},
-  {id:"pinocchio", name:"ピノキオの冒険旅行",                   land:"fantasy",   x:52,y:44, base:20, type:"ride", dur:3},
-  {id:"carrousel", name:"キャッスルカルーセル",                 land:"fantasy",   x:50,y:50, base:10, type:"ride", dur:2},
-  {id:"philhar",   name:"ミッキーのフィルハーマジック",          land:"fantasy",   x:53,y:40, base:25, type:"show", dur:13},
-  {id:"beauty",    name:"美女と野獣“魔法のものがたり”",land:"fantasy",   x:45,y:30, base:80, type:"ride", dur:9},
-  {id:"alice",     name:"アリスのティーパーティー",             land:"fantasy",   x:57,y:44, base:15, type:"ride", dur:2},
-  {id:"toontoon",  name:"ロジャーラビットのカートゥーンスピン", land:"toon",      x:55,y:25, base:35, type:"ride", dur:4},
-  {id:"gadget",    name:"ガジェットのゴーコースター",           land:"toon",      x:60,y:22, base:30, type:"ride", dur:2},
-  {id:"startours", name:"スター・ツアーズ",                     land:"tomorrow",  x:70,y:52, base:30, type:"ride", dur:7},
-  {id:"buzz",      name:"ベイマックスのハッピーライド",          land:"tomorrow",  x:72,y:58, base:35, type:"ride", dur:5},
-  {id:"monsters",  name:"モンスターズ・インク“ライド＆ゴーシーク！”", land:"tomorrow", x:66,y:60, base:55, type:"ride", dur:5},
-  {id:"stitch",    name:"スティッチ・エンカウンター",           land:"tomorrow",  x:70,y:62, base:20, type:"show", dur:12},
+  // 地中海港
+  {id:"fortress",   name:"フォートレス・エクスプロレーション",          land:"med",      x:48,y:72, base:5,  type:"walk", dur:30},
+  {id:"gondola",    name:"ヴェネツィアン・ゴンドラ",                    land:"med",      x:42,y:75, base:20, type:"ride", dur:15},
+  {id:"steamer_m",  name:"トランジットスチーマーライン（地中海港）",     land:"med",      x:55,y:78, base:5,  type:"ride", dur:10},
+  // アメリカンウォーターフロント
+  {id:"tot",        name:"タワー・オブ・テラー",                        land:"american", x:78,y:68, base:70, type:"ride", dur:5},
+  {id:"tsm",        name:"トイ・ストーリー・マニア！",                   land:"american", x:80,y:75, base:60, type:"ride", dur:10},
+  {id:"turtle",     name:"タートル・トーク",                            land:"american", x:75,y:72, base:30, type:"show", dur:20},
+  {id:"soaring",    name:"ソアリン：ファンタスティック・フライト",       land:"american", x:84,y:62, base:75, type:"ride", dur:10},
+  {id:"bcv",        name:"ビッグシティ・ヴィークルズ",                  land:"american", x:82,y:78, base:5,  type:"ride", dur:5},
+  {id:"elec_aw",    name:"エレクトリックレールウェイ（AW）",            land:"american", x:72,y:62, base:5,  type:"ride", dur:10},
+  {id:"steam_aw",   name:"トランジットスチーマーライン（AW）",           land:"american", x:70,y:72, base:5,  type:"ride", dur:10},
+  // ポートディスカバリー
+  {id:"aquatopia",  name:"アクアトピア",                               land:"port",     x:82,y:52, base:25, type:"ride", dur:5},
+  {id:"searider",   name:"ニモ＆フレンズ・シーライダー",                land:"port",     x:78,y:48, base:50, type:"ride", dur:10},
+  {id:"elec_pd",    name:"エレクトリックレールウェイ（PD）",            land:"port",     x:76,y:52, base:5,  type:"ride", dur:10},
+  // ロストリバーデルタ
+  {id:"indiana",    name:"インディ・ジョーンズ・アドベンチャー",        land:"lost",     x:72,y:35, base:65, type:"ride", dur:5},
+  {id:"raging",     name:"レイジングスピリッツ",                       land:"lost",     x:68,y:42, base:50, type:"ride", dur:4},
+  {id:"steam_lr",   name:"トランジットスチーマーライン（ロストリバー）", land:"lost",     x:65,y:40, base:5,  type:"ride", dur:10},
+  // ファンタジースプリングス
+  {id:"rapunzel",   name:"ラプンツェルのランタンフェスティバル",        land:"springs",  x:52,y:20, base:90, type:"ride", dur:10},
+  {id:"frozen",     name:"アナとエルサのフローズンジャーニー",          land:"springs",  x:45,y:22, base:85, type:"ride", dur:10},
+  {id:"peterpan",   name:"ピーターパンのネバーランドアドベンチャー",    land:"springs",  x:58,y:25, base:70, type:"ride", dur:5},
+  {id:"tinker",     name:"フェアリー・ティンカーベルのビジーバギー",    land:"springs",  x:50,y:28, base:40, type:"ride", dur:5},
+  // アラビアンコースト
+  {id:"sindbad",    name:"シンドバッド・ストーリーブック・ヴォヤッジ",  land:"arabian",  x:32,y:45, base:20, type:"ride", dur:15},
+  {id:"magiclamp",  name:"マジックランプシアター",                      land:"arabian",  x:28,y:50, base:35, type:"show", dur:20},
+  {id:"caravan",    name:"キャラバンカルーセル",                       land:"arabian",  x:35,y:52, base:15, type:"ride", dur:3},
+  {id:"jasmine",    name:"ジャスミンのフライングカーペット",            land:"arabian",  x:30,y:55, base:15, type:"ride", dur:3},
+  {id:"whirlpool",  name:"ザ・ウォーターポーカー",                     land:"arabian",  x:38,y:48, base:10, type:"ride", dur:3},
+  // マーメイドラグーン
+  {id:"flounder",   name:"フランダーのフライングフィッシュコースター",  land:"mermaid",  x:22,y:65, base:25, type:"ride", dur:3},
+  {id:"blowfish",   name:"ブローフィッシュ・バルーンレース",            land:"mermaid",  x:25,y:70, base:20, type:"ride", dur:3},
+  {id:"ariel",      name:"アリエルのプレイグラウンド",                 land:"mermaid",  x:18,y:68, base:10, type:"walk", dur:20},
+  {id:"jellyfish",  name:"ジャンピン・ジェリーフィッシュ",             land:"mermaid",  x:20,y:62, base:20, type:"ride", dur:3},
+  {id:"scuttle",    name:"スカットルのスクーター",                     land:"mermaid",  x:24,y:60, base:15, type:"ride", dur:3},
+  {id:"mermaid_th", name:"マーメイドラグーン・シアター",               land:"mermaid",  x:22,y:72, base:30, type:"show", dur:20},
+  // ミステリアスアイランド
+  {id:"journey",    name:"センター・オブ・ジ・アース",                  land:"mystery",  x:45,y:58, base:75, type:"ride", dur:5},
+  {id:"leagues",    name:"海底2万マイル",                              land:"mystery",  x:48,y:55, base:35, type:"ride", dur:15},
+  {id:"leonardo",   name:"ザ・レオナルド・チャレンジ",                 land:"mystery",  x:50,y:62, base:10, type:"walk", dur:30},
 ];
 
-const PROXY_URL = "https://tdl-proxy.isihiro-mno.workers.dev";
+const PROXY_URL = "https://tdl-proxy.isihiro-mno.workers.dev/?park=275";
 const QT_ID_TO_LOCAL = {
-  7986:"pirates", 7987:"jungle",   7988:"wrr",      7990:"tiki",
-  7994:"btm",     7993:"marktwain",7992:"cbear",    7991:"gallery",
-  7996:"splash",  7997:"canoe",    8008:"pooh",     8005:"mansion",
-  8006:"isw",     7998:"peterpan", 8002:"pinocchio",8004:"carrousel",
-  8001:"philhar", 8255:"beauty",   8007:"alice",    8009:"toontoon",
-  8012:"gadget",  8015:"startours",8254:"buzz",     8018:"monsters",
-  8021:"stitch",
+  8031:"steamer_m", 8034:"gondola",   8048:"fortress",
+  8047:"tot",       8023:"tsm",       8050:"turtle",    8024:"soaring",
+  8037:"bcv",       8036:"elec_aw",   8032:"steam_aw",
+  8038:"aquatopia", 8051:"searider",  8035:"elec_pd",
+  8027:"indiana",   8046:"raging",    8033:"steam_lr",
+  13560:"rapunzel", 13559:"frozen",   13561:"peterpan", 13562:"tinker",
+  8039:"sindbad",   8030:"magiclamp", 8040:"caravan",   8025:"jasmine",  8045:"whirlpool",
+  8041:"flounder",  8044:"blowfish",  8022:"ariel",     8043:"jellyfish",8042:"scuttle",  8026:"mermaid_th",
+  8028:"journey",   8029:"leagues",   8049:"leonardo",
 };
+
 async function fetchLiveWaits(){
   const res = await fetch(PROXY_URL,{cache:"no-store"});
   if(!res.ok) throw new Error(res.status);
@@ -333,76 +365,74 @@ function buildPlan(){
 }
 
 /* ===== MAP ===== */
-// SVG viewBox 0 0 350 330  →  grid(0-100) * scale
 const MX=x=>x*3.5, MY=y=>y*3.3;
 
-// Land zone shapes: cx,cy,rx,ry in grid coords
 const ZONES = {
-  adventure:{cx:36,cy:74,rx:10,ry:9},
-  western:  {cx:27,cy:63,rx:10,ry:7},
-  critter:  {cx:20,cy:51,rx:7, ry:7},
-  fantasy:  {cx:47,cy:40,rx:15,ry:13},
-  toon:     {cx:57,cy:24,rx:8, ry:7},
-  tomorrow: {cx:69,cy:57,rx:9, ry:9},
+  med:     {cx:48,cy:77, rx:13,ry:10},
+  american:{cx:77,cy:70, rx:12,ry:12},
+  port:    {cx:80,cy:51, rx:10,ry:9},
+  lost:    {cx:70,cy:38, rx:11,ry:9},
+  springs: {cx:51,cy:23, rx:13,ry:8},
+  arabian: {cx:32,cy:51, rx:11,ry:10},
+  mermaid: {cx:22,cy:66, rx:9, ry:9},
+  mystery: {cx:47,cy:58, rx:8, ry:7},
 };
 
-// Shortened land name labels for the map
 const LAND_SHORT = {
-  adventure:"アドベンチャー",western:"ウエスタン",critter:"クリッター",
-  fantasy:"ファンタジー",toon:"トゥーンタウン",tomorrow:"トゥモロー",
+  med:"地中海港",american:"AW",port:"PD",
+  lost:"ロストリバー",springs:"ファンタジーS",
+  arabian:"アラビアン",mermaid:"マーメイド",mystery:"ミステリアス",
 };
 
 function renderMap(){
   const next = nextBest(curPos, state);
   let h = "";
 
-  // Sky/grass background
+  // Gradient defs
   h += `<defs>
-    <radialGradient id="skyGrad" cx="50%" cy="40%" r="60%">
-      <stop offset="0%" stop-color="#D4EBF8"/>
-      <stop offset="100%" stop-color="#B8D8F0"/>
+    <radialGradient id="seaGrad" cx="50%" cy="55%" r="65%">
+      <stop offset="0%" stop-color="#A8D8F0"/>
+      <stop offset="100%" stop-color="#80B8E0"/>
     </radialGradient>
-    <radialGradient id="grassGrad" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#C8E6A0"/>
-      <stop offset="100%" stop-color="#A8D080"/>
+    <radialGradient id="harborGrad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#5599CC"/>
+      <stop offset="100%" stop-color="#3377AA"/>
+    </radialGradient>
+    <radialGradient id="lavaGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FF8040"/>
+      <stop offset="100%" stop-color="#802000"/>
     </radialGradient>
   </defs>`;
 
-  // Background
-  h += `<rect width="350" height="330" fill="url(#skyGrad)" rx="10"/>`;
+  // Sea background
+  h += `<rect width="350" height="330" fill="url(#seaGrad)" rx="10"/>`;
 
-  // Park oval (grass)
-  h += `<ellipse cx="163" cy="185" rx="128" ry="142" fill="url(#grassGrad)" stroke="#90C060" stroke-width="2"/>`;
+  // Park land mass (green oval)
+  h += `<ellipse cx="162" cy="185" rx="130" ry="145" fill="#B8D898" stroke="#90B870" stroke-width="1.5"/>`;
 
-  // World Bazaar / main path
-  h += `<rect x="151" y="162" width="24" height="135" fill="#E8DFCC" opacity="0.75" rx="3"/>`;
+  // Inner harbor water (Mediterranean Harbor)
+  h += `<ellipse cx="172" cy="250" rx="45" ry="32" fill="url(#harborGrad)" stroke="#4488BB" stroke-width="1.5"/>`;
+  // Harbor waves
+  h += `<ellipse cx="172" cy="250" rx="38" ry="25" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1"/>`;
+  h += `<ellipse cx="172" cy="250" rx="28" ry="17" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1"/>`;
+
+  // Main entrance path
+  h += `<rect x="157" y="270" width="26" height="55" fill="#D8CEBA" opacity="0.7" rx="3"/>`;
 
   // Land zones
   Object.entries(ZONES).forEach(([lk,z])=>{
     const col = LANDS[lk].color;
     h += `<ellipse cx="${MX(z.cx)}" cy="${MY(z.cy)}" rx="${z.rx*3.5}" ry="${z.ry*3.3}" fill="${col}" opacity="0.28" stroke="${col}" stroke-width="1.2" stroke-opacity="0.5"/>`;
-    h += `<text x="${MX(z.cx)}" y="${MY(z.cy)+4}" text-anchor="middle" font-size="8" fill="${col}" font-weight="700" font-family="'Noto Sans JP',sans-serif">${LAND_SHORT[lk]}</text>`;
+    h += `<text x="${MX(z.cx)}" y="${MY(z.cy)+4}" text-anchor="middle" font-size="7.5" fill="${col}" font-weight="700" font-family="'Noto Sans JP',sans-serif">${LAND_SHORT[lk]}</text>`;
   });
 
-  // Castle at x=48,y=48 → SVG (168,158)
-  const csX=168, csY=155;
-  h += `<g transform="translate(${csX-20},${csY-26})">
-    <rect x="7" y="20" width="26" height="24" fill="#C0CCDE" stroke="#8899AA" stroke-width="0.8" rx="1"/>
-    <rect x="12" y="9" width="12" height="14" fill="#AABCCE" stroke="#8899AA" stroke-width="0.8"/>
-    <rect x="10" y="4"  width="4" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="17" y="4"  width="4" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="26" y="4"  width="4" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="0"  y="22" width="9" height="18" fill="#B0C0D8" stroke="#8899AA" stroke-width="0.7" rx="1"/>
-    <rect x="1"  y="17" width="3" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="5.5"y="17" width="3" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="31" y="22" width="9" height="18" fill="#B0C0D8" stroke="#8899AA" stroke-width="0.7" rx="1"/>
-    <rect x="32" y="17" width="3" height="7" fill="#9AAEC0" rx="1"/>
-    <rect x="36.5"y="17" width="3" height="7" fill="#9AAEC0" rx="1"/>
-    <path d="M14 30 Q20 24 26 30" fill="#8090A8"/>
-    <line x1="20" y1="0" x2="20" y2="5" stroke="#E8002D" stroke-width="1.5"/>
-    <polygon points="20,0 27,3 20,6" fill="#E8002D"/>
-  </g>`;
-  h += `<text x="${csX}" y="${csY+20}" text-anchor="middle" font-size="7.5" fill="#556688" font-weight="700" font-family="'Noto Sans JP',sans-serif">シンデレラ城</text>`;
+  // Mt. Prometheus (Mysterious Island) at x:42, y:60 → SVG (147, 198)
+  const vx=MX(42), vy=MY(60);
+  h += `<polygon points="${vx},${vy-32} ${vx-22},${vy+8} ${vx+22},${vy+8}" fill="#802010" opacity="0.85"/>`;
+  h += `<polygon points="${vx},${vy-32} ${vx-12},${vy-10} ${vx+12},${vy-10}" fill="#C03010" opacity="0.9"/>`;
+  // Lava glow at peak
+  h += `<ellipse cx="${vx}" cy="${vy-32}" rx="6" ry="5" fill="url(#lavaGrad)" opacity="0.9"/>`;
+  h += `<text x="${vx}" y="${vy+20}" text-anchor="middle" font-size="7" fill="#802010" font-weight="700" font-family="'Noto Sans JP',sans-serif">プロメテウス火山</text>`;
 
   // Attraction dots
   state.forEach(a=>{
@@ -431,7 +461,6 @@ function renderMap(){
         h += `<text x="${sx}" y="${sy+3}" text-anchor="middle" font-size="5.5" fill="#fff" font-weight="900" font-family="'Mochiy Pop One',sans-serif">${a.wait}</text>`;
       }
     }
-    // Tooltip
     h += `<title>${a.name}\n待ち: ${a.open?(a.wait+"分"):"休止中"}</title>`;
   });
 
@@ -440,18 +469,15 @@ function renderMap(){
   h += `<polygon points="${ex},${ey-10} ${ex-9},${ey+5} ${ex+9},${ey+5}" fill="#E8002D" stroke="#fff" stroke-width="1.5"/>`;
   h += `<text x="${ex}" y="${ey+18}" text-anchor="middle" font-size="8.5" fill="#E8002D" font-weight="700" font-family="'Noto Sans JP',sans-serif">入口</text>`;
 
-  // Current position: mini Mickey ears (only when moved from entrance)
+  // Current position: wave/star when moved
   if(curPos.x!==50||curPos.y!==93){
     const px=MX(curPos.x), py=MY(curPos.y);
-    h += `<circle cx="${px-4.5}" cy="${py-5}" r="4" fill="#1A1A1A"/>`;
-    h += `<circle cx="${px+4.5}" cy="${py-5}" r="4" fill="#1A1A1A"/>`;
-    h += `<circle cx="${px}" cy="${py+1}" r="6.5" fill="#1A1A1A"/>`;
-    h += `<circle cx="${px}" cy="${py}" r="4" fill="#F5D4A8"/>`;
+    h += `<circle cx="${px}" cy="${py}" r="8" fill="none" stroke="#FFC72C" stroke-width="2.5" opacity="0.9"/>`;
+    h += `<circle cx="${px}" cy="${py}" r="4" fill="#FFC72C"/>`;
   }
 
   document.getElementById("park-map").innerHTML = h;
 
-  // Legend
   document.getElementById("map-legend").innerHTML =
     Object.entries(LANDS).map(([,l])=>
       `<div class="legend-item"><span class="legend-swatch" style="background:${l.color}"></span>${l.name}</div>`
@@ -501,7 +527,6 @@ function render(){
       <div class="why" style="margin-top:14px">おつかれさまでした！「はじめから」で再挑戦できます。</div>`;
   }
 
-  // Route plan
   const planEl=document.getElementById("plan");
   planEl.innerHTML = plan.length
     ? plan.map((p,i)=>`
@@ -512,7 +537,6 @@ function render(){
         </div>`).join('')
     : `<div class="step"><div class="nm"><b>残りなし 🎉</b></div></div>`;
 
-  // Attraction list
   const byLand={};
   state.forEach(a=>{ (byLand[a.land]=byLand[a.land]||[]).push(a); });
   document.getElementById("lands").innerHTML = Object.keys(LANDS).map(lk=>{
@@ -529,7 +553,7 @@ function render(){
               :`<div class="closetag">休止中</div>`}</div>
           </div>
           <div class="meta">
-            <span class="chip">${a.type==="show"?"シアター":a.type==="walk"?"体験":"ライド"}</span>
+            <span class="chip">${a.type==="show"?"シアター":a.type==="walk"?"体験・散策":"ライド"}</span>
             <span class="chip">所要~${a.dur}分</span>
           </div>
           <button class="ridebtn" data-id="${a.id}">${a.done?"✓ 制覇済み（戻す）":"乗った"}</button>
