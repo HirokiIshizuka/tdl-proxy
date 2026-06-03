@@ -162,6 +162,27 @@ input[type=range]{accent-color:var(--blue);width:85px}
 .ride.done .ridebtn{background:linear-gradient(135deg,var(--teal),var(--teal-dk))}
 .closetag{font-size:10px;color:var(--red);font-weight:700}
 
+/* HISTORY */
+.hstep{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:13px}
+.hstep+.hstep{border-top:1px solid var(--line)}
+.hord{flex:none;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--gold-dk),var(--gold));color:#1A1A1A;font-family:"Mochiy Pop One";font-size:12px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(201,150,12,.3)}
+.hnm{flex:1;min-width:0}
+.hnm b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hnm small{font-size:11px;color:var(--ink-soft)}
+.htime{text-align:right;font-size:11px;color:var(--ink-soft);white-space:nowrap;flex:none}
+.htime b{font-family:"Mochiy Pop One";font-size:13px;color:var(--gold-dk);display:block}
+.history-empty{padding:18px;text-align:center;color:var(--ink-soft);font-size:13px;line-height:1.7}
+.undo-row{padding:10px 12px;border-top:1px solid var(--line);text-align:right}
+.undo-btn{background:none;border:1.5px solid var(--line);border-radius:10px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink-soft);font-family:"Noto Sans JP";transition:border-color .15s,color .15s}
+.undo-btn:hover{border-color:var(--coral);color:var(--coral)}
+/* EXPLAIN */
+.explain-box{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:22px 24px;box-shadow:var(--shadow-sm)}
+.explain-box h4{font-family:"Zen Maru Gothic";font-weight:900;font-size:15px;color:var(--blue);margin-bottom:14px}
+.explain-box h5{font-family:"Zen Maru Gothic";font-weight:700;font-size:13px;color:var(--blue);margin:14px 0 5px}
+.explain-box p,.explain-box li{font-size:13px;color:var(--ink-soft);line-height:1.85}
+.explain-box ul{padding-left:18px}
+.explain-box li{margin-bottom:3px}
+
 .park-nav{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:999px;display:inline-flex;gap:2px;padding:3px;margin-top:14px;position:relative}
 .park-nav a{color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;padding:6px 14px;border-radius:999px;transition:background .15s,color .15s}
 .park-nav a.active{background:#fff;color:#003087}
@@ -223,8 +244,28 @@ footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
   <div class="sec"><h3>📋 最短ルート（残り全制覇プラン）</h3><div class="bar"></div></div>
   <div class="plan" id="plan"></div>
 
+  <div class="sec"><h3>🎯 あなたの制覇記録</h3><div class="bar"></div></div>
+  <div class="plan" id="history"></div>
+
   <div class="sec"><h3>🎢 アトラクション一覧</h3><div class="bar"></div></div>
   <div class="lands-wrap" id="lands"></div>
+
+  <div class="sec"><h3>ℹ️ このアプリについて</h3><div class="bar"></div></div>
+  <div class="explain-box">
+    <h4>📐 ルート計算の仕組みと更新タイミング</h4>
+    <h5>次の1台はどうやって決めているの？</h5>
+    <p>今いる場所から、まだ乗っていない全アトラクションを見渡して、<b>「移動時間＋待ち時間」の合計が一番少ない</b>ところを選んでいます。混んでいても近ければ得、空いていても遠ければ損。それぞれを足した「実質コスト」で比べています。</p>
+    <h5>全体ルートはどう作っているの？</h5>
+    <p>「次のおすすめを選ぶ → 次の現在地へ → また選ぶ…」を全制覇まで繰り返す、<b>貪欲法（どんよくほう）</b>という方法を使っています。必ず世界最短とは限りませんが、待ち時間がリアルタイムで変わるパークでは「そのつど最善を選ぶ」ことが実用的に最も効果的です。</p>
+    <h5>いつ再計算しているの？</h5>
+    <ul>
+      <li>「乗った！」ボタンを押したとき（現在地が変わるため）</li>
+      <li>「待ち時間を更新」ボタンを押したとき</li>
+      <li>5分ごとに自動でライブデータを取得して更新</li>
+    </ul>
+    <h5>徒歩時間はどうやって計算しているの？</h5>
+    <p>パーク内の各アトラクションに地図上のXY座標を設定し、2点間の直線距離をもとに徒歩時間を推算しています。実際の通路は曲がっているため完全ではありませんが、混雑を含めた目安として機能します。</p>
+  </div>
 
   <footer>
     待ち時間データ提供：<a href="https://queue-times.com/" target="_blank" rel="noopener">Powered by Queue-Times.com</a><br>
@@ -299,9 +340,11 @@ let curPos = {...ENTRANCE};
 let walkWeight = 1.0;
 let parkOpenMin = 9*60;
 let simClock = 0;
+const rideHistory = [];  // {id, name, landName, arrivedAt, wait, walk, dur, clockBefore}
+const posHistory  = [];  // undoのための位置スタック
 
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
-const walkMin=(from,to)=>Math.max(1,Math.round(dist(from,to)*0.22));
+const walkMin=(from,to)=>Math.max(2,Math.round(dist(from,to)*0.26));
 function waitClass(w){ return w<20?"low":w<45?"mid":"high"; }
 function fmtClock(min){ const t=parkOpenMin+min,h=Math.floor(t/60)%24,m=Math.round(t%60); return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`; }
 
@@ -542,19 +585,55 @@ function render(){
   document.querySelectorAll(".ridebtn").forEach(b=>{ b.onclick=()=>toggleRide(b.dataset.id); });
   document.getElementById("updated").textContent=`更新: ${new Date().toLocaleTimeString("ja-JP")}（ライブデータ）`;
 
+  renderHistory();
   renderMap();
+}
+
+function renderHistory(){
+  const el=document.getElementById("history");
+  if(!rideHistory.length){
+    el.innerHTML=`<div class="history-empty">まだ「乗った！」を押していません。<br>乗るたびにここに順番で記録されます。</div>`;
+    return;
+  }
+  el.innerHTML=rideHistory.map((r,i)=>`
+    <div class="hstep">
+      <div class="hord">${i+1}</div>
+      <div class="hnm"><b>${r.name}</b><small>${r.landName}・徒歩${r.walk}分＋待ち${r.wait}分</small></div>
+      <div class="htime"><b>${r.arrivedAt}</b>乗車</div>
+    </div>`).join('')+
+    `<div class="undo-row"><button class="undo-btn" onclick="undoLast()">↩ 最後の1つを取り消す</button></div>`;
 }
 
 function rideIt(id){
   const a=state.find(x=>x.id===id); if(!a) return;
   const w=walkMin(curPos,a);
+  posHistory.push({...curPos});
+  rideHistory.push({
+    id:a.id, name:a.name, landName:LANDS[a.land].name,
+    arrivedAt:fmtClock(simClock+w),
+    wait:a.wait, walk:w, dur:a.dur,
+    clockBefore:simClock,
+  });
   simClock+=w+a.wait+a.dur;
   a.done=true; curPos={x:a.x,y:a.y};
   render(); refresh();
 }
+function undoLast(){
+  if(!rideHistory.length) return;
+  const last=rideHistory.pop();
+  const a=state.find(x=>x.id===last.id);
+  if(a) a.done=false;
+  simClock=last.clockBefore;
+  curPos=posHistory.pop()||{...ENTRANCE};
+  render();
+}
 function toggleRide(id){
   const a=state.find(x=>x.id===id); if(!a) return;
-  if(a.done){ a.done=false; } else { rideIt(id); return; }
+  if(a.done){
+    a.done=false;
+    const idx=rideHistory.findIndex(r=>r.id===id);
+    if(idx!==-1) rideHistory.splice(idx,1);
+  } else { rideIt(id); return; }
   render();
 }
 async function refresh(){
@@ -564,6 +643,7 @@ async function refresh(){
 }
 function reset(){
   state.forEach(a=>{a.done=false;a.wait=a.base;a.open=true;});
+  rideHistory.length=0; posHistory.length=0;
   curPos={...ENTRANCE}; simClock=0; refresh();
 }
 
