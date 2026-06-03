@@ -377,6 +377,26 @@ let simClock = 0;
 const rideHistory = [];
 const posHistory  = [];
 
+const SESSION_KEY = 'tds_route';
+function saveSession(){
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+    rideHistory, posHistory, simClock, curPos,
+    doneIds: state.filter(a=>a.done).map(a=>a.id),
+  }));
+}
+function loadSession(){
+  try{
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    rideHistory.push(...(d.rideHistory||[]));
+    posHistory.push(...(d.posHistory||[]));
+    if(d.simClock) simClock = d.simClock;
+    if(d.curPos)   curPos  = d.curPos;
+    (d.doneIds||[]).forEach(id=>{ const a=state.find(x=>x.id===id); if(a) a.done=true; });
+  } catch(e){ sessionStorage.removeItem(SESSION_KEY); }
+}
+
 const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 // 地中海港をはさんで東西を移動する場合は迂回時間を加算
 function walkMin(from,to){
@@ -571,6 +591,7 @@ function renderMap(){
 }
 
 function render(){
+  saveSession();
   const done=state.filter(a=>a.done).length;
   const {plan,total}=buildPlan();
 
@@ -705,6 +726,7 @@ async function refresh(){
   render();
 }
 function reset(){
+  sessionStorage.removeItem(SESSION_KEY);
   state.forEach(a=>{a.done=false;a.wait=a.base;a.open=true;});
   rideHistory.length=0; posHistory.length=0;
   curPos={...ENTRANCE}; simClock=0; refresh();
@@ -719,6 +741,7 @@ document.getElementById("walkW").oninput=e=>{
   render();
 };
 
+loadSession();
 refresh();
 setInterval(refresh,5*60*1000);
 </script>
