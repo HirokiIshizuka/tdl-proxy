@@ -211,9 +211,11 @@ footer a{color:var(--blue-lt);font-weight:700;text-decoration:none}
     <button class="ctrl-btn teal" id="refresh">⟳ 待ち時間を更新</button>
     <button class="ctrl-btn" id="reset">🔄 はじめから</button>
     <div class="sliderbox">
-      <label>徒歩の重視度</label>
+      <label>ルート優先</label>
+      <span style="font-size:11px;color:var(--ink-soft);white-space:nowrap">空き重視</span>
       <input type="range" id="walkW" min="0" max="200" value="100" step="10">
-      <span id="walkWv" style="font-size:12px;font-weight:700;color:var(--blue)">×1.0</span>
+      <span style="font-size:11px;color:var(--ink-soft);white-space:nowrap">近さ重視</span>
+      <span id="walkWv" style="font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap">バランス</span>
     </div>
     <div class="updated" id="updated"></div>
   </div>
@@ -569,7 +571,8 @@ document.getElementById("refresh").onclick=refresh;
 document.getElementById("reset").onclick=reset;
 document.getElementById("walkW").oninput=e=>{
   walkWeight=e.target.value/100;
-  document.getElementById("walkWv").textContent="×"+walkWeight.toFixed(1);
+  const v=+e.target.value;
+  document.getElementById("walkWv").textContent=v<50?"空き最優先":v<150?"バランス":"近さ最優先";
   render();
 };
 
