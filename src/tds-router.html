@@ -401,18 +401,49 @@ function nextBest(from,pool){
   return best;
 }
 function buildPlan(){
-  const plan=[]; let pos={...curPos}; let clock=simClock;
   const pending=state.filter(a=>!a.done&&a.open);
-  while(pending.length){
+  if(!pending.length) return {plan:[],total:0};
+
+  // 貪欲法で初期順序を生成
+  const rem=[...pending]; let order=[], pos={...curPos};
+  while(rem.length){
     let best=null,bc=Infinity,bi=-1;
-    pending.forEach((a,i)=>{ const c=cost(pos,a); if(c<bc){bc=c;best=a;bi=i;} });
-    const w=walkMin(pos,best);
-    plan.push({...best,walk:w,atClock:clock+w});
-    clock+=w+best.wait+best.dur;
-    pos={x:best.x,y:best.y};
-    pending.splice(bi,1);
+    rem.forEach((a,i)=>{ const c=cost(pos,a); if(c<bc){bc=c;best=a;bi=i;} });
+    order.push(best); pos={x:best.x,y:best.y}; rem.splice(bi,1);
   }
-  return {plan, total:clock-simClock};
+
+  // 2-opt で順序を改善
+  order=twoOpt(order);
+
+  // タイミング付きプランに変換
+  const plan=[]; pos={...curPos}; let clock=simClock;
+  order.forEach(a=>{
+    const w=walkMin(pos,a);
+    plan.push({...a,walk:w,atClock:clock+w});
+    clock+=w+a.wait+a.dur; pos={x:a.x,y:a.y};
+  });
+  return {plan,total:clock-simClock};
+}
+
+function twoOpt(order){
+  if(order.length<3) return order;
+  let arr=[...order], improved=true;
+  while(improved){
+    improved=false;
+    outer: for(let i=0;i<arr.length-1;i++){
+      for(let j=i+1;j<arr.length;j++){
+        const prev = i===0 ? curPos : arr[i-1];
+        const next = j===arr.length-1 ? null : arr[j+1];
+        const before = walkMin(prev,arr[i]) + (next ? walkMin(arr[j],next) : 0);
+        const after  = walkMin(prev,arr[j]) + (next ? walkMin(arr[i],next) : 0);
+        if(after<before){
+          arr=[...arr.slice(0,i),...arr.slice(i,j+1).reverse(),...arr.slice(j+1)];
+          improved=true; break outer;
+        }
+      }
+    }
+  }
+  return arr;
 }
 
 /* ===== MAP ===== */
