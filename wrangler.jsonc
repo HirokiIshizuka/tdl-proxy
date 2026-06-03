@@ -1,0 +1,11 @@
+{
+  // Worker名。これがURLになる → tdl-proxy.<サブドメイン>.workers.dev
+  "name": "tdl-proxy",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-01",
+
+  // 実行ログをダッシュボードで見られるようにする（無料枠でOK）
+  "observability": {
+    "enabled": true
+  }
+}
