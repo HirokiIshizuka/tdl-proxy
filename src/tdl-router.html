@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>パークルーター｜最短全制覇ナビ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --base:#FBF6EC;
+    --paper:#FFFDF8;
+    --ink:#2C2A35;
+    --ink-soft:#6B6776;
+    --coral:#FF6B5E;
+    --coral-dk:#E8503F;
+    --teal:#0FB5A8;
+    --teal-dk:#0A8C82;
+    --sunny:#FFC247;
+    --line:#EAE2D2;
+    --shadow:0 10px 30px -12px rgba(44,42,53,.28);
+    --shadow-sm:0 4px 14px -6px rgba(44,42,53,.22);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--base);color:var(--ink);font-family:"Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}
+  body{
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(255,194,71,.16), transparent 42%),
+      radial-gradient(circle at 88% 12%, rgba(15,181,168,.14), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(255,107,94,.10), transparent 50%);
+    min-height:100vh;
+    padding:0 0 60px;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 18px}
+
+  /* Header */
+  header{padding:30px 18px 10px;text-align:center}
+  .logo{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:clamp(28px,6vw,42px);letter-spacing:.5px;line-height:1.1}
+  .logo .a{color:var(--coral)}.logo .b{color:var(--teal)}
+  .tag{margin-top:8px;color:var(--ink-soft);font-size:14px;font-weight:500}
+
+  /* Stat bar */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0 18px}
+  .stat{background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:14px 10px;text-align:center;box-shadow:var(--shadow-sm)}
+  .stat .num{font-family:"Mochiy Pop One",sans-serif;font-size:clamp(20px,5vw,28px);line-height:1;color:var(--ink)}
+  .stat .num small{font-size:.55em;color:var(--ink-soft)}
+  .stat .lbl{margin-top:7px;font-size:11px;color:var(--ink-soft);font-weight:700;letter-spacing:.4px}
+  .stat.hl .num{color:var(--coral)}
+
+  /* Recommendation hero */
+  .hero{position:relative;background:linear-gradient(135deg,#fff 0%, #FFF6EE 100%);border:2px solid var(--coral);border-radius:26px;padding:22px 22px 20px;box-shadow:var(--shadow);overflow:hidden}
+  .hero::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;background:radial-gradient(circle,var(--sunny),transparent 70%);opacity:.35}
+  .hero .kicker{display:inline-flex;align-items:center;gap:7px;background:var(--coral);color:#fff;font-weight:700;font-size:12px;padding:6px 12px;border-radius:999px;letter-spacing:.5px}
+  .hero .pin{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.4);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+  .hero h2{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:clamp(22px,5.5vw,32px);margin:12px 0 4px;line-height:1.15}
+  .hero .land{color:var(--ink-soft);font-weight:700;font-size:13px}
+  .hero .metrics{display:flex;gap:22px;margin-top:16px;flex-wrap:wrap}
+  .hero .metric{display:flex;flex-direction:column}
+  .hero .metric .v{font-family:"Mochiy Pop One",sans-serif;font-size:26px;line-height:1}
+  .hero .metric .v.wait{color:var(--coral)}
+  .hero .metric .v.walk{color:var(--teal)}
+  .hero .metric .k{font-size:11px;color:var(--ink-soft);font-weight:700;margin-top:5px}
+  .hero .why{margin-top:14px;font-size:12.5px;color:var(--ink-soft);background:#fff;border:1px dashed var(--line);border-radius:12px;padding:9px 12px}
+  .hero .act{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+  .btn{font-family:"Noto Sans JP";font-weight:700;border:none;border-radius:14px;padding:13px 18px;font-size:14px;cursor:pointer;transition:transform .12s ease, box-shadow .12s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--coral);color:#fff;box-shadow:0 6px 16px -6px var(--coral-dk)}
+  .btn-primary:hover{box-shadow:0 9px 20px -6px var(--coral-dk)}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .btn-teal{background:var(--teal);color:#fff;box-shadow:0 6px 16px -6px var(--teal-dk)}
+
+  /* Controls row */
+  .controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:24px 0 10px}
+  .controls .btn{padding:11px 16px}
+  .sliderbox{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:9px 14px;box-shadow:var(--shadow-sm)}
+  .sliderbox label{font-size:12px;font-weight:700;color:var(--ink-soft)}
+  input[type=range]{accent-color:var(--teal)}
+  .updated{font-size:12px;color:var(--ink-soft);margin-left:auto}
+
+  /* Section titles */
+  .sec{margin:30px 0 12px;display:flex;align-items:center;gap:10px}
+  .sec h3{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:18px}
+  .sec .bar{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 12px)}
+
+  /* Route plan */
+  .plan{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:8px;box-shadow:var(--shadow-sm)}
+  .step{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:14px}
+  .step+.step{border-top:1px solid var(--line)}
+  .step .ord{flex:none;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;font-family:"Mochiy Pop One";font-size:14px;display:grid;place-items:center}
+  .step .nm{flex:1;min-width:0}
+  .step .nm b{font-size:14.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .step .nm span{font-size:11px;color:var(--ink-soft)}
+  .step .tm{text-align:right;font-size:12px;color:var(--ink-soft);white-space:nowrap}
+  .step .tm b{font-family:"Mochiy Pop One";font-size:15px;color:var(--ink);display:block}
+
+  /* Attraction list */
+  .lands{display:flex;flex-direction:column;gap:18px}
+  .land-card .land-h{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+  .land-card .dot{width:11px;height:11px;border-radius:3px}
+  .land-card .land-h b{font-family:"Zen Maru Gothic";font-weight:700;font-size:15px}
+  .land-card .land-h span{font-size:11px;color:var(--ink-soft)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+  .ride{background:var(--paper);border:1.5px solid var(--line);border-radius:16px;padding:13px 14px;display:flex;flex-direction:column;gap:9px;transition:border-color .15s, opacity .2s}
+  .ride.done{opacity:.5;background:#F4F0E6}
+  .ride.closed{opacity:.6;border-style:dashed}
+  .ride .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+  .ride .rn{font-size:13.5px;font-weight:700;line-height:1.25}
+  .ride .wait{flex:none;text-align:center;min-width:52px}
+  .ride .wait .w{font-family:"Mochiy Pop One";font-size:19px;line-height:1}
+  .ride .wait .w.low{color:var(--teal)}.ride .wait .w.mid{color:var(--sunny)}.ride .wait .w.high{color:var(--coral)}
+  .ride .wait .u{font-size:9px;color:var(--ink-soft);margin-top:2px}
+  .ride .meta{font-size:11px;color:var(--ink-soft);display:flex;gap:8px;flex-wrap:wrap}
+  .ride .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+  .ride .ridebtn{margin-top:2px;border:none;border-radius:11px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;background:var(--ink);color:#fff;transition:background .15s}
+  .ride .ridebtn:hover{background:#000}
+  .ride.done .ridebtn{background:var(--teal)}
+  .closetag{font-size:10px;color:var(--coral-dk);font-weight:700}
+
+  footer{margin-top:34px;text-align:center;font-size:11px;color:var(--ink-soft);line-height:1.7}
+  footer a{color:var(--teal-dk);font-weight:700;text-decoration:none}
+  .note{background:#FFF7E8;border:1px solid var(--sunny);border-radius:14px;padding:12px 14px;font-size:12px;color:#8a6d1f;margin-top:20px;line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="a">パーク</span><span class="b">ルーター</span></div>
+  <div class="tag">待ち時間を読みながら「次に乗るべき1台」を教える · 全アトラクション最短制覇ナビ</div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="hero" id="hero"></div>
+
+  <div class="controls">
+    <button class="btn btn-teal" id="refresh">⟳ 待ち時間を更新</button>
+    <button class="btn btn-ghost" id="reset">はじめから</button>
+    <div class="sliderbox">
+      <label>徒歩の重視度</label>
+      <input type="range" id="walkW" min="0" max="200" value="100" step="10">
+      <span id="walkWv" style="font-size:12px;font-weight:700;color:var(--teal-dk)">×1.0</span>
+    </div>
+    <div class="updated" id="updated"></div>
+  </div>
+
+  <div class="sec"><h3>🗺️ 最短ルート（残り全制覇プラン）</h3><div class="bar"></div></div>
+  <div class="plan" id="plan"></div>
+
+  <div class="sec"><h3>🎢 アトラクション一覧</h3><div class="bar"></div></div>
+  <div class="lands" id="lands"></div>
+
+  <div class="note">
+    ⚠️ このプロトタイプの待ち時間は<b>シミュレーション値</b>です（時間帯カーブ＋ゆらぎで自動生成）。本番は queue-times.com のライブAPIに差し替えます（コードは別途）。アトラクションの座標・休止状況も実データに合わせて更新してください。
+  </div>
+
+  <footer>
+    待ち時間データ提供：<a href="https://queue-times.com/" target="_blank" rel="noopener">Powered by Queue-Times.com</a><br>
+    ※本番運用時はこの表記が利用条件です。徒歩時間はパーク地図からの概算です。
+  </footer>
+</div>
+
+<script>
+/* ---------- アトラクションデータ（東京ディズニーランド・代表例） ----------
+   x,y : パーク地図上の概算座標（0-100グリッド／入口=下）
+   base: 平均待ち時間の基準値（分）。人気度の代理
+   type: ride / show / walk
+------------------------------------------------------------------ */
+const LANDS = {
+  adventure:{ name:"アドベンチャーランド", color:"#3FA66A" },
+  western:  { name:"ウエスタンランド",     color:"#C8843C" },
+  critter:  { name:"クリッターカントリー", color:"#8A6B3F" },
+  fantasy:  { name:"ファンタジーランド",   color:"#C95E9E" },
+  toon:     { name:"トゥーンタウン",       color:"#E8A93C" },
+  tomorrow: { name:"トゥモローランド",     color:"#3F8FC8" },
+};
+const ENTRANCE = {x:50,y:93};
+
+const ATTR = [
+  // adventureland
+  {id:"pirates", name:"カリブの海賊", land:"adventure", x:35,y:78, base:25, type:"ride", dur:15},
+  {id:"jungle",  name:"ジャングルクルーズ", land:"adventure", x:32,y:70, base:35, type:"ride", dur:10},
+  {id:"wrr",     name:"ウエスタンリバー鉄道", land:"adventure", x:40,y:68, base:15, type:"ride", dur:13},
+  {id:"tiki",    name:"魅惑のチキルーム", land:"adventure", x:38,y:80, base:10, type:"show", dur:15},
+  // westernland
+  {id:"btm",     name:"ビッグサンダー・マウンテン", land:"western", x:22,y:58, base:55, type:"ride", dur:4},
+  {id:"marktwain",name:"蒸気船マークトウェイン号", land:"western", x:30,y:60, base:15, type:"ride", dur:15},
+  {id:"cbear",   name:"カントリーベア・シアター", land:"western", x:28,y:66, base:15, type:"show", dur:15},
+  {id:"gallery", name:"ウエスタンランド・シューティングギャラリー", land:"western", x:33,y:64, base:20, type:"ride", dur:3},
+  // critter country
+  {id:"splash",  name:"スプラッシュ・マウンテン", land:"critter", x:18,y:50, base:60, type:"ride", dur:11},
+  {id:"canoe",   name:"ビーバーブラザーズのカヌー探険", land:"critter", x:22,y:52, base:25, type:"ride", dur:10},
+  // fantasyland
+  {id:"pooh",    name:"プーさんのハニーハント", land:"fantasy", x:45,y:40, base:65, type:"ride", dur:5},
+  {id:"mansion", name:"ホーンテッドマンション", land:"fantasy", x:38,y:45, base:40, type:"ride", dur:9},
+  {id:"isw",     name:"イッツ・ア・スモールワールド", land:"fantasy", x:40,y:35, base:25, type:"ride", dur:10},
+  {id:"peterpan",name:"ピーターパン空の旅", land:"fantasy", x:50,y:42, base:45, type:"ride", dur:3},
+  {id:"pinocchio",name:"ピノキオの冒険旅行", land:"fantasy", x:52,y:44, base:20, type:"ride", dur:3},
+  {id:"carrousel",name:"キャッスルカルーセル", land:"fantasy", x:50,y:50, base:10, type:"ride", dur:2},
+  {id:"philhar", name:"ミッキーのフィルハーマジック", land:"fantasy", x:53,y:40, base:25, type:"show", dur:13},
+  {id:"beauty",  name:"美女と野獣“魔法のものがたり”", land:"fantasy", x:45,y:30, base:80, type:"ride", dur:9},
+  {id:"alice",   name:"アリスのティーパーティー", land:"fantasy", x:57,y:44, base:15, type:"ride", dur:2},
+  // toontown
+  {id:"toontoon",name:"ロジャーラビットのカートゥーンスピン", land:"toon", x:55,y:25, base:35, type:"ride", dur:4},
+  {id:"gadget",  name:"ガジェットのゴーコースター", land:"toon", x:60,y:22, base:30, type:"ride", dur:2},
+  // tomorrowland
+  {id:"startours",name:"スター・ツアーズ", land:"tomorrow", x:70,y:52, base:30, type:"ride", dur:7},
+  {id:"buzz",    name:"バズ・ライトイヤーのアストロブラスター", land:"tomorrow", x:72,y:58, base:45, type:"ride", dur:5},
+  {id:"monsters",name:"モンスターズ・インク“ライド＆ゴーシーク！”", land:"tomorrow", x:66,y:60, base:55, type:"ride", dur:5},
+  {id:"stitch",  name:"スティッチ・エンカウンター", land:"tomorrow", x:70,y:62, base:20, type:"show", dur:12},
+];
+
+/* ---------- 状態 ---------- */
+let state = ATTR.map(a=>({ ...a, wait:a.base, open:true, done:false }));
+let curPos = {...ENTRANCE};
+let walkWeight = 1.0;
+let elapsed = 0;          // 経過（分・推定）
+let parkOpenMin = 9*60;   // 9:00 想定の経過起点
+let simClock = 0;         // 0 = 開園直後
+
+/* ---------- ユーティリティ ---------- */
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const walkMin=(from,to)=>Math.max(1, Math.round(dist(from,to)*0.22)); // グリッド→分
+function waitClass(w){ return w<20?"low":w<45?"mid":"high"; }
+function fmtClock(min){ const t=parkOpenMin+min; const h=Math.floor(t/60)%24; const m=Math.round(t%60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
+
+/* 待ち時間シミュレーション：時間帯カーブ × 人気度 × ゆらぎ */
+function simulateWaits(){
+  const hourFrac = (simClock/60); // 開園からの時間
+  // 昼にピークを作る山型カーブ（0〜1.3倍）
+  const curve = 0.55 + 0.8*Math.exp(-Math.pow((hourFrac-3.5)/3,2));
+  state.forEach(a=>{
+    if(!a.open) return;
+    const noise = 0.7 + Math.random()*0.6;
+    a.wait = Math.max(5, Math.round(a.base * curve * noise / 5)*5);
+  });
+  // たまにランダムで休止（実データではis_openで判定）
+}
+
+/* ---------- 推薦＆ルーティング（貪欲法） ---------- */
+function cost(from, a){ return a.wait + walkMin(from,a)*walkWeight; }
+
+function nextBest(from, pool){
+  let best=null, bc=Infinity;
+  pool.forEach(a=>{
+    if(a.done||!a.open) return;
+    const c=cost(from,a);
+    if(c<bc){bc=c;best=a;}
+  });
+  return best;
+}
+
+// 残り全部を貪欲シミュレーションして順序と累積時間を出す
+function buildPlan(){
+  const remaining = state.filter(a=>!a.done && a.open);
+  const plan=[]; let pos={...curPos}; let clock=simClock; let total=0;
+  const pending=[...remaining];
+  while(pending.length){
+    let best=null,bc=Infinity,bi=-1;
+    pending.forEach((a,i)=>{ const c=cost(pos,a); if(c<bc){bc=c;best=a;bi=i;} });
+    const w=walkMin(pos,best);
+    total += w + best.wait + best.dur;
+    plan.push({ ...best, walk:w, atClock:clock+w });
+    clock += w + best.wait + best.dur;
+    pos={x:best.x,y:best.y};
+    pending.splice(bi,1);
+  }
+  return {plan,total};
+}
+
+/* ---------- レンダリング ---------- */
+function render(){
+  const done = state.filter(a=>a.done).length;
+  const totalN = state.length;
+  const {plan,total} = buildPlan();
+
+  // stats
+  document.getElementById('stats').innerHTML = `
+    <div class="stat hl"><div class="num">${done}<small>/${totalN}</small></div><div class="lbl">制覇</div></div>
+    <div class="stat"><div class="num">${Math.floor(total/60)}<small>h</small>${total%60}<small>分</small></div><div class="lbl">残り推定</div></div>
+    <div class="stat"><div class="num">${fmtClock(simClock)}</div><div class="lbl">現在時刻(想定)</div></div>
+    <div class="stat"><div class="num">${fmtClock(simClock+total)}</div><div class="lbl">全制覇予定</div></div>`;
+
+  // hero（次の1台）
+  const next = nextBest(curPos, state);
+  const hero = document.getElementById('hero');
+  if(next){
+    const w = walkMin(curPos,next);
+    const cheapestWait = Math.min(...state.filter(a=>!a.done&&a.open).map(a=>a.wait));
+    const why = next.wait<=cheapestWait+5
+      ? "今いちばん空いている台。先に回収しておくと終盤がラクになります。"
+      : "待ち時間＋移動の合計が最小。近さで稼ぐ一手です。";
+    hero.innerHTML = `
+      <span class="kicker"><span class="pin"></span>NEXT｜次に乗るべき1台</span>
+      <h2>${next.name}</h2>
+      <div class="land">${LANDS[next.land].name}</div>
+      <div class="metrics">
+        <div class="metric"><span class="v wait">${next.wait}<small style="font-size:.5em">分</small></span><span class="k">待ち時間</span></div>
+        <div class="metric"><span class="v walk">${w}<small style="font-size:.5em">分</small></span><span class="k">徒歩</span></div>
+        <div class="metric"><span class="v">${next.wait+w}<small style="font-size:.5em">分</small></span><span class="k">到達まで合計</span></div>
+      </div>
+      <div class="why">💡 ${why}</div>
+      <div class="act">
+        <button class="btn btn-primary" id="rideNext">✓ 乗った！（次へ）</button>
+        <button class="btn btn-ghost" id="skipNext">スキップ</button>
+      </div>`;
+    document.getElementById('rideNext').onclick=()=>rideIt(next.id);
+    document.getElementById('skipNext').onclick=()=>{ next._skip=true; render(); };
+  } else {
+    hero.innerHTML = `<span class="kicker">🎉 COMPLETE</span><h2>全アトラクション制覇！</h2>
+      <div class="why">おつかれさまでした。所要 ${fmtClock(simClock)} まで。「はじめから」で再挑戦できます。</div>`;
+  }
+
+  // plan
+  const planEl=document.getElementById('plan');
+  if(plan.length){
+    planEl.innerHTML = plan.map((p,i)=>`
+      <div class="step">
+        <div class="ord">${i+1}</div>
+        <div class="nm"><b>${p.name}</b><span>${LANDS[p.land].name}・徒歩${p.walk}分＋待ち${p.wait}分</span></div>
+        <div class="tm"><b>~${fmtClock(p.atClock)}</b>到着</div>
+      </div>`).join('');
+  } else {
+    planEl.innerHTML = `<div class="step"><div class="nm"><b>残りなし 🎉</b></div></div>`;
+  }
+
+  // lands
+  const byLand={};
+  state.forEach(a=>{ (byLand[a.land]=byLand[a.land]||[]).push(a); });
+  document.getElementById('lands').innerHTML = Object.keys(LANDS).map(lk=>{
+    const arr=byLand[lk]||[]; if(!arr.length) return '';
+    const ld=LANDS[lk];
+    const doneN=arr.filter(a=>a.done).length;
+    return `<div class="land-card">
+      <div class="land-h"><span class="dot" style="background:${ld.color}"></span><b>${ld.name}</b><span>${doneN}/${arr.length} 制覇</span></div>
+      <div class="grid">${arr.map(a=>`
+        <div class="ride ${a.done?'done':''} ${a.open?'':'closed'}">
+          <div class="top">
+            <div class="rn">${a.name}</div>
+            <div class="wait">${a.open?`<div class="w ${waitClass(a.wait)}">${a.wait}</div><div class="u">分待ち</div>`:`<div class="closetag">休止中</div>`}</div>
+          </div>
+          <div class="meta"><span class="chip">${a.type==='show'?'シアター':a.type==='walk'?'体験':'ライド'}</span><span class="chip">所要~${a.dur}分</span></div>
+          <button class="ridebtn" data-id="${a.id}">${a.done?'✓ 制覇済み（戻す）':'乗った'}</button>
+        </div>`).join('')}</div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.ridebtn').forEach(b=>{
+    b.onclick=()=>toggleRide(b.dataset.id);
+  });
+
+  document.getElementById('updated').textContent = `更新: ${new Date().toLocaleTimeString('ja-JP')}（5分ごと想定）`;
+}
+
+/* ---------- アクション ---------- */
+function rideIt(id){
+  const a=state.find(x=>x.id===id); if(!a) return;
+  const w=walkMin(curPos,a);
+  simClock += w + a.wait + a.dur;   // 時計を進める
+  a.done=true; curPos={x:a.x,y:a.y};
+  simulateWaits();                  // 移動の間に待ち時間が変化
+  render();
+}
+function toggleRide(id){
+  const a=state.find(x=>x.id===id); if(!a) return;
+  if(a.done){ a.done=false; }
+  else { rideIt(id); return; }
+  render();
+}
+function refresh(){ simulateWaits(); render(); }
+function reset(){
+  state.forEach(a=>{a.done=false;a.wait=a.base;a.open=true;});
+  curPos={...ENTRANCE}; simClock=0; simulateWaits(); render();
+}
+
+document.getElementById('refresh').onclick=refresh;
+document.getElementById('reset').onclick=reset;
+document.getElementById('walkW').oninput=(e)=>{
+  walkWeight=e.target.value/100;
+  document.getElementById('walkWv').textContent='×'+walkWeight.toFixed(1);
+  render();
+};
+
+/* init */
+simulateWaits();
+render();
+</script>
+</body>
+</html>
