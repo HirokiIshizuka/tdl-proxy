@@ -206,10 +206,34 @@ const ATTR = [
   {id:"gadget",  name:"ガジェットのゴーコースター", land:"toon", x:60,y:22, base:30, type:"ride", dur:2},
   // tomorrowland
   {id:"startours",name:"スター・ツアーズ", land:"tomorrow", x:70,y:52, base:30, type:"ride", dur:7},
-  {id:"buzz",    name:"バズ・ライトイヤーのアストロブラスター", land:"tomorrow", x:72,y:58, base:45, type:"ride", dur:5},
+  {id:"buzz",    name:"ベイマックスのハッピーライド", land:"tomorrow", x:72,y:58, base:35, type:"ride", dur:5},
   {id:"monsters",name:"モンスターズ・インク“ライド＆ゴーシーク！”", land:"tomorrow", x:66,y:60, base:55, type:"ride", dur:5},
   {id:"stitch",  name:"スティッチ・エンカウンター", land:"tomorrow", x:70,y:62, base:20, type:"show", dur:12},
 ];
+
+/* ---------- ライブデータ ---------- */
+const PROXY_URL = "https://tdl-proxy.isihiro-mno.workers.dev";
+const QT_ID_TO_LOCAL = {
+  7986:"pirates", 7987:"jungle",   7988:"wrr",      7990:"tiki",
+  7994:"btm",     7993:"marktwain",7992:"cbear",    7991:"gallery",
+  7996:"splash",  7997:"canoe",    8008:"pooh",     8005:"mansion",
+  8006:"isw",     7998:"peterpan", 8002:"pinocchio",8004:"carrousel",
+  8001:"philhar", 8255:"beauty",   8007:"alice",    8009:"toontoon",
+  8012:"gadget",  8015:"startours",8254:"buzz",     8018:"monsters",
+  8021:"stitch",
+};
+async function fetchLiveWaits(){
+  const res = await fetch(PROXY_URL, { cache:"no-store" });
+  if(!res.ok) throw new Error(res.status);
+  const data = await res.json();
+  const rides = data.rides?.length ? data.rides : data.lands.flatMap(l=>l.rides);
+  rides.forEach(r=>{
+    const a = state.find(x=>x.id===QT_ID_TO_LOCAL[r.id]);
+    if(!a) return;
+    a.open = r.is_open;
+    a.wait = r.wait_time ?? 0;
+  });
+}
 
 /* ---------- 状態 ---------- */
 let state = ATTR.map(a=>({ ...a, wait:a.base, open:true, done:false }));
@@ -350,17 +374,17 @@ function render(){
     b.onclick=()=>toggleRide(b.dataset.id);
   });
 
-  document.getElementById('updated').textContent = `更新: ${new Date().toLocaleTimeString('ja-JP')}（5分ごと想定）`;
+  document.getElementById('updated').textContent = `更新: ${new Date().toLocaleTimeString('ja-JP')}（ライブデータ）`;
 }
 
 /* ---------- アクション ---------- */
 function rideIt(id){
   const a=state.find(x=>x.id===id); if(!a) return;
   const w=walkMin(curPos,a);
-  simClock += w + a.wait + a.dur;   // 時計を進める
+  simClock += w + a.wait + a.dur;
   a.done=true; curPos={x:a.x,y:a.y};
-  simulateWaits();                  // 移動の間に待ち時間が変化
   render();
+  refresh();
 }
 function toggleRide(id){
   const a=state.find(x=>x.id===id); if(!a) return;
@@ -368,10 +392,15 @@ function toggleRide(id){
   else { rideIt(id); return; }
   render();
 }
-function refresh(){ simulateWaits(); render(); }
+async function refresh(){
+  try{ await fetchLiveWaits(); }
+  catch(e){ console.warn("ライブデータ取得失敗:", e); simulateWaits(); }
+  render();
+}
 function reset(){
   state.forEach(a=>{a.done=false;a.wait=a.base;a.open=true;});
-  curPos={...ENTRANCE}; simClock=0; simulateWaits(); render();
+  curPos={...ENTRANCE}; simClock=0;
+  refresh();
 }
 
 document.getElementById('refresh').onclick=refresh;
@@ -383,8 +412,8 @@ document.getElementById('walkW').oninput=(e)=>{
 };
 
 /* init */
-simulateWaits();
-render();
+refresh();
+setInterval(refresh, 5*60*1000);
 </script>
 </body>
 </html>
