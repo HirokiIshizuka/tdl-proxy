@@ -341,7 +341,9 @@ let state = ATTR.map(a=>({...a, wait:a.base, open:true, done:false}));
 let curPos = {...ENTRANCE};
 let walkWeight = 1.0;
 let parkOpenMin = 9*60;
-let simClock = 0;
+const _nowJST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+const _nowMinJST = _nowJST.getHours() * 60 + _nowJST.getMinutes();
+let simClock = Math.max(0, _nowMinJST - parkOpenMin);
 const rideHistory = [];
 const posHistory  = [];
 
